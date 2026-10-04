@@ -35,8 +35,8 @@ Source6:	https://github.com/intel/compute-runtime/archive/refs/tags/%{neo_ver}/c
 # Ninja 1.13 errors if link_job_pool is declared twice.
 Patch0:		0001-ninja-link-pool-once.patch
 
-# The compiler emits SPIR-V for Intel GPUs. Host code is x86_64.
-ExclusiveArch:	x86_64 znver1
+# Host compiler. It emits SPIR-V for the GPU and builds for the
+# architecture it is compiled on, including aarch64.
 
 BuildRequires:	cmake
 BuildRequires:	ninja
