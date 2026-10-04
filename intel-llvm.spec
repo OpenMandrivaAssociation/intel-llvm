@@ -34,6 +34,8 @@ Source5:	https://github.com/greg7mdp/parallel-hashmap/archive/%{phmap_commit}/pa
 Source6:	https://github.com/intel/compute-runtime/archive/refs/tags/%{neo_ver}/compute-runtime-%{neo_ver}.tar.gz
 # Ninja 1.13 errors if link_job_pool is declared twice.
 Patch0:		0001-ninja-link-pool-once.patch
+# libstdc++fs is not shipped; std::filesystem lives in libstdc++.
+Patch1:		0002-optional-libstdcxxfs.patch
 
 # Host compiler. It emits SPIR-V for the GPU and builds for the
 # architecture it is compiled on, including aarch64.

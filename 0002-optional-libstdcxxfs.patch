@@ -1,0 +1,25 @@
+Do not link libstdc++fs when the library is not installed.
+
+GCC 9 and later provide std::filesystem from libstdc++. The unified
+runtime always added -lstdc++fs, which fails the UMF link on this distro.
+
+--- a/unified-runtime/CMakeLists.txt	2026-10-04 02:47:19.911980522 +0200
++++ b/unified-runtime/CMakeLists.txt	2026-10-04 02:47:19.941361622 +0200
+@@ -137,11 +137,12 @@
+         int main() {}"
+         USING_LIBSTDCXX)
+     if(UR_FORCE_LIBSTDCXX OR USING_LIBSTDCXX)
+-        # Support older versions of GCC where the <filesystem> header is not
+-        # available and <experimental/filesystem> must be used instead. This
+-        # requires linking against libstdc++fs.a, on systems where <filesystem>
+-        # is available we still need to link this library.
+-        link_libraries(stdc++fs)
++        # GCC 8 kept std::filesystem in libstdc++fs. GCC 9+ moved it into
++        # libstdc++. This distro does not ship the old library.
++        find_library(UR_LIBSTDCXXFS NAMES stdc++fs)
++        if(UR_LIBSTDCXXFS)
++            link_libraries(${UR_LIBSTDCXXFS})
++        endif()
+     endif()
+ endif()
+ 
