@@ -1,0 +1,18 @@
+Ninja 1.12 and later reject a job pool that is declared twice. This tree
+includes HandleLLVMOptions from more than one project, and each include
+appended link_job_pool when LLVM_PARALLEL_LINK_JOBS was set.
+
+--- a/llvm/cmake/modules/HandleLLVMOptions.cmake	2026-10-04 02:22:04.430872163 +0200
++++ b/llvm/cmake/modules/HandleLLVMOptions.cmake	2026-10-04 02:22:05.144516756 +0200
+@@ -81,7 +81,10 @@
+     set(LLVM_PARALLEL_LINK_JOBS "2")
+   endif()
+   if(LLVM_PARALLEL_LINK_JOBS)
+-    set_property(GLOBAL APPEND PROPERTY JOB_POOLS link_job_pool=${LLVM_PARALLEL_LINK_JOBS})
++    get_property(_llvm_job_pools GLOBAL PROPERTY JOB_POOLS)
++    if(NOT _llvm_job_pools MATCHES "(^|;)link_job_pool=")
++      set_property(GLOBAL APPEND PROPERTY JOB_POOLS link_job_pool=${LLVM_PARALLEL_LINK_JOBS})
++    endif()
+     set(CMAKE_JOB_POOL_LINK link_job_pool)
+   endif()
+ elseif(LLVM_PARALLEL_LINK_JOBS)

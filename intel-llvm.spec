@@ -32,6 +32,8 @@ Source5:	https://github.com/greg7mdp/parallel-hashmap/archive/%{phmap_commit}/pa
 # Experimental Level Zero headers (ze_intel_gpu.h). The loader package does
 # not ship these; compute-runtime does, but this package must not wait on it.
 Source6:	https://github.com/intel/compute-runtime/archive/refs/tags/%{neo_ver}/compute-runtime-%{neo_ver}.tar.gz
+# Ninja 1.13 errors if link_job_pool is declared twice.
+Patch0:		0001-ninja-link-pool-once.patch
 
 # The compiler emits SPIR-V for Intel GPUs. Host code is x86_64.
 ExclusiveArch:	x86_64 znver1
