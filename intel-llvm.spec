@@ -153,6 +153,12 @@ ln -sf %{_libdir}/intel-llvm/bin/icx %{buildroot}%{_bindir}/icx
 mkdir -p %{buildroot}%{_sysconfdir}/ld.so.conf.d
 echo "%{_libdir}/intel-llvm/lib" > %{buildroot}%{_sysconfdir}/ld.so.conf.d/intel-llvm.conf
 
+# sycl-jit installs a private toolchain copy into the build tree with
+# cmake --install. That command inherits DESTDIR, so the same tree is
+# also written under the buildroot. It is embedded into libsycl-jit and
+# is not a packaged path.
+rm -rf %{buildroot}/builddir
+
 %files
 %license LICENSE.TXT
 %{_libdir}/intel-llvm/
