@@ -131,6 +131,7 @@ python buildbot/configure.py \
 	--cmake-opt=-DUMF_BUILD_EXAMPLES=OFF \
 	--cmake-opt=-DLLVM_HOST_TRIPLE=${_triple} \
 	--cmake-opt=-DLLVM_DEFAULT_TARGET_TRIPLE=${_triple} \
+	--cmake-opt=-DUSE_DEPRECATED_GCC_INSTALL_PREFIX=ON \
 	--cmake-opt=-DGCC_INSTALL_PREFIX=/usr
 # Link jobs are several GB each.
 cmake --build %{_builddir}/intel-llvm-build --target sycl-toolchain -j${RPM_BUILD_NCPUS:-$(nproc)}
