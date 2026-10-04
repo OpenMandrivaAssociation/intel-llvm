@@ -53,6 +53,8 @@ BuildRequires:	pkgconfig(level-zero) >= 1.32.0
 BuildRequires:	pkgconfig(hwloc)
 BuildRequires:	pkgconfig(OpenCL)
 BuildRequires:	pkgconfig(OpenCL-Headers)
+# gcc -dumpmachine is the directory under /usr/lib64/gcc.
+BuildRequires:	gcc
 
 Provides:	bundled(spirv-headers)
 Provides:	bundled(vc-intrinsics)
@@ -98,6 +100,11 @@ EOF
 export CFLAGS="%{optflags}"
 export CXXFLAGS="%{optflags}"
 export LDFLAGS="$(printf '%s' '%{build_ldflags}' | sed -e 's/-Wl,--no-undefined//g')"
+# The compiler is installed under %{_libdir}/intel-llvm, so it will not
+# find the system GCC by walking up from its own prefix. The triple has
+# to be the distro one (znver1- or aarch64-openmandriva-linux-gnu), not
+# the generic *-unknown-linux-gnu triple, or libdevice cannot see <cstddef>.
+_triple=$(gcc -dumpmachine)
 python buildbot/configure.py \
 	--no-assertions \
 	--l0-headers %{_includedir}/level_zero \
@@ -121,7 +128,10 @@ python buildbot/configure.py \
 	--cmake-opt=-DUMF_BUILD_LIBUMF_POOL_JEMALLOC=OFF \
 	--cmake-opt=-DUMF_LEVEL_ZERO_INCLUDE_DIR=%{_includedir}/level_zero \
 	--cmake-opt=-DUMF_BUILD_TESTS=OFF \
-	--cmake-opt=-DUMF_BUILD_EXAMPLES=OFF
+	--cmake-opt=-DUMF_BUILD_EXAMPLES=OFF \
+	--cmake-opt=-DLLVM_HOST_TRIPLE=${_triple} \
+	--cmake-opt=-DLLVM_DEFAULT_TARGET_TRIPLE=${_triple} \
+	--cmake-opt=-DGCC_INSTALL_PREFIX=/usr
 # Link jobs are several GB each.
 cmake --build %{_builddir}/intel-llvm-build --target sycl-toolchain -j${RPM_BUILD_NCPUS:-$(nproc)}
 
